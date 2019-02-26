@@ -7,4 +7,5 @@ capabilities:
 parameters:
   actual_class_label: IAI_CNN_ClassLabel_objects
   set_mode: CL
+  feature_descriptor_type: BVLC_REF
   trained_model_name: IAI_CNN_rsrfModel_objects

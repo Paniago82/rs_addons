@@ -35,10 +35,7 @@ private:
   //set_mode should be GT(groundTruth) or CF (classify) ...........
   std::string set_mode;
 
-  //dataset_use should be IAI (kitchen data from IAI) or WU (data from Washington University) or both...
-  std::string dataset_use;
-
-  //feature_use should be VFH, CVFH, CNN, VGG16 .....
+  //feature_use should be VFH, CVFH, BVLC, VGG16 .....
   std::string feature_use;
 
   //the name of trained model ifle in folder rs_addons/trainedData/
@@ -66,6 +63,7 @@ public:
     ctx.extractValue("set_mode", set_mode);
     ctx.extractValue("trained_model_name", trained_model_name);
     ctx.extractValue("actual_class_label", actual_class_label);
+    ctx.extractValue("feature_descriptor_type", feature_use);
 
     outInfo("Name of the loaded files for RF are:"<<std::endl);
 
@@ -75,12 +73,6 @@ public:
 
     rfObject->setLabels(actual_class_label, model_labels);
 
-    boost::split(split_model, trained_model_name, boost::is_any_of("_"));
-
-    dataset_use= split_model[0];
-    outInfo("dataset_use:"<<dataset_use<<std::endl);
-
-    feature_use= split_model[1];
     outInfo("feature_use:"<<feature_use<<std::endl);
 
     return UIMA_ERR_NONE;
@@ -104,17 +96,17 @@ public:
 
     if(feature_use == "VFH" || feature_use == "CVFH")
     {
-      outInfo("Calculation starts with : " << set_mode << "::" << dataset_use << "::" << feature_use);
+      outInfo("Calculation starts with : " << set_mode << "::" << "::" << feature_use);
       rfObject->processPCLFeature(trained_model_name,set_mode,feature_use,clusters, rfObject, color,model_labels, tcas);
     }
-    else if(feature_use == "CNN" || feature_use == "VGG16")
+    else if(feature_use == "BVLC_REF" || feature_use == "VGG16")
     {
-      outInfo("Calculation starts with : " << set_mode << "::" << dataset_use << "::" << feature_use);
+      outInfo("Calculation starts with : " << set_mode << "::" << "::" << feature_use);
       rfObject->processCaffeFeature(trained_model_name,set_mode,feature_use,clusters, rfObject, color, model_labels, tcas);
     }
     else
     {
-      outError("Please sellect the correct value of parameter(feature_use): VFH, CVFH, CNN, VGG16");
+      outError("Please sellect the correct value of parameter(feature_use): VFH, CVFH, BVLC_REF, VGG16");
     }
 
     outInfo("calculation is done with RSRF"<<std::endl);
