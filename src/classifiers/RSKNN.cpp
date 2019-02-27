@@ -227,6 +227,11 @@ void RSKNN::annotate_hypotheses(uima::CAS &tcas, std::string class_name, std::st
   classResult.classname.set(class_name);
   classResult.classifier("k-Nearest Neighbor");
   classResult.featurename(feature_name);
+
+    rs::ClassConfidence conResult = rs::create<rs::ClassConfidence>(tcas);
+    conResult.score.set(confi);
+    cluster.annotations.append(conResult);
+
   classResult.source.set("Knn");
   if(feature_name == "BVLC_REF") {
     classResult.classification_type("INSTANCE");
@@ -237,6 +242,7 @@ void RSKNN::annotate_hypotheses(uima::CAS &tcas, std::string class_name, std::st
 
   if(set_mode == "CL") {
     cluster.annotations.append(classResult);
+
   }
   else if(set_mode == "GT") {
     rs::GroundTruth setGT = rs::create<rs::GroundTruth>(tcas);
