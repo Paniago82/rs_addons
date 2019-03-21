@@ -1,4 +1,4 @@
-// Developed by: Rakib
+sbs// Developed by: Rakib
 
 #include <uima/api.hpp>
 #include <iostream>
@@ -68,7 +68,7 @@ public:
     ctx.extractValue("set_mode", set_mode);
     ctx.extractValue("trained_model_name", trained_model_name);
     ctx.extractValue("actual_class_label", actual_class_label);
-
+    ctx.extractValue("feature_descriptor_type", feature_use);
     outInfo("Name of the loaded files for SVM are:"<<std::endl);
 
     outInfo("set_mode:"<<set_mode<<std::endl);
@@ -77,12 +77,12 @@ public:
 
     svmObject->setLabels(actual_class_label, model_labels);
 
+      outInfo("feature_use:"<<feature_use<<std::endl);
+
     boost::split(split_model, trained_model_name, boost::is_any_of("_"));
 
     dataset_use= split_model[0];
-    outInfo("dataset_use:"<<dataset_use<<std::endl);
 
-    feature_use= split_model[1];
     outInfo("feature_use:"<<feature_use<<std::endl);
 
     return UIMA_ERR_NONE;
@@ -111,7 +111,7 @@ public:
       outInfo("Calculation starts with : " << set_mode << "::" << dataset_use << "::" << feature_use);
       svmObject->processPCLFeature(trained_model_name, set_mode, feature_use, clusters, svmObject, color, model_labels, tcas);
     }
-    else if(feature_use == "CNN" || feature_use == "VGG16")
+    else if(feature_use == "BVLC_REF" || feature_use == "VGG16")
     {
       outInfo("Calculation starts with : " << set_mode << "::" << dataset_use << "::" << feature_use);
       svmObject->processCaffeFeature(trained_model_name, set_mode, feature_use, clusters, svmObject, color, model_labels, tcas);

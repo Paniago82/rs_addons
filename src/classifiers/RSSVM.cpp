@@ -182,7 +182,7 @@ void RSSVM::annotate_hypotheses(uima::CAS &tcas, std::string class_name, std::st
   classResult.classifier("Support Vector Machine");
   classResult.featurename(feature_name);
 
-  if(feature_name == "CNN") {
+  if(feature_name == "BVLC_REF") {
     classResult.classification_type("INSTANCE");
   }
   else if(feature_name == "VFH") {

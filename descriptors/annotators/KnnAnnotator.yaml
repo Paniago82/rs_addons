@@ -4,11 +4,11 @@ annotator:
 capabilities:
   inputs: ['rs.scene.MergedHypothesis', 'rs.annotation.Features']
   outputs: 
-    - rs.annotation.Classification: [WhiteCeramicIkeaBowl, KoellnMuesliKnusperHonigNuss, AlbiHimbeerJuice, BluePlasticKnife, BluePlasticSpoon, LargeGreySpoon, RedPlasticKnife, SlottedSpatula]
-#    - rs.annotation.Classification: [CupEcoOrange,RedMetalPlateWhiteSpeckles,BluePlasticFork,BluePlasticKnife,RedPlasticKnife,BlueMetalPlateWhiteSpeckles,SiggBottle,ElBrygCoffee,KelloggsCornFlakes,ReineButterMilch,PfannerPfirsichIcetea,VollMilch,SojaMilch,MeerSalz]
+    - rs.annotation.Classification:
 parameters:
   feature_descriptor_type: BVLC_REF  # for now these are BVLC_REF and VFH
-  class_label_mapping: extracted_feats/BVLC_REF_ClassLabel_ijrr_objs.txt
-  default_k: 5
+  class_label_mapping: extracted_feats/BVLC_REF_ClassLabel_ai_dataset_robocup_known_objects.txt
+  default_k: 8
   set_mode: CL # CL|GT CL-for adding Classification results; use classifier to semi-automate adding GT to data
-  training_data: extracted_feats/BVLC_REF_data_ijrr_objs.yaml
+  training_data: extracted_feats/BVLC_REF_data_ai_dataset_robocup_known_objects.yaml
+

@@ -5,7 +5,7 @@ capabilities:
   inputs: []
   outputs: []
 parameters:
-  actual_class_label: IAI_CNN_ClassLabel_objects
+  actual_class_label: extracted_feats/BVLC_REF_ClassLabel_ai_dataset_robocup_known_objects.txt
   set_mode: CL
   feature_descriptor_type: BVLC_REF
-  trained_model_name: IAI_CNN_rsrfModel_objects
+  trained_model_name: known_objects.model

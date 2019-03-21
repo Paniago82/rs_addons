@@ -5,6 +5,7 @@ capabilities:
   inputs: []
   outputs: []
 parameters:
-  actual_class_label: IAI_VFH_ClassLabel_breakfast1shape
+  actual_class_label: extracted_feats/BVLC_REF_ClassLabel_ai_dataset_robocup_known_objects.txt
   set_mode: CL
-  trained_model_name: IAI_VFH_rssvmModel_breakfast1shape
+  feature_descriptor_type: BVLC_REF
+  trained_model_name: classifier.xml
