@@ -1,0 +1,14 @@
+annotator:
+  implementation: rs_knnAnnotatorKnownObject
+  name: KnnAnnotatorKnownObj
+capabilities:
+  inputs: ['rs.scene.MergedHypothesis', 'rs.annotation.Features']
+  outputs: 
+    - rs.annotation.Classification:
+parameters:
+  feature_descriptor_type: BVLC_REF  # for now these are BVLC_REF and VFH
+  class_label_mapping: extracted_feats/BVLC_REF_ClassLabel_10_known_objects.txt
+  default_k: 8
+  set_mode: CL # CL|GT CL-for adding Classification results; use classifier to semi-automate adding GT to data
+  training_data: extracted_feats/BVLC_REF_data_10_known_objects.yaml
+
