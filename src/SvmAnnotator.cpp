@@ -1,4 +1,4 @@
-sbs// Developed by: Rakib
+// Developed by: Rakib
 
 #include <uima/api.hpp>
 #include <iostream>
