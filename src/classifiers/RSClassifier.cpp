@@ -167,7 +167,7 @@ std::string RSClassifier::loadTrained(std::string trained_file_name)
   std::string a;
   packagePath = ros::package::getPath("rs_addons") + '/';
 
-  if(!boost::filesystem::exists(packagePath + save_train + trained_file_name + ".xml")) {
+  if(!boost::filesystem::exists(packagePath + save_train + trained_file_name)) {
     outError(trained_file_name << " trained Model file does not exist in path " << packagePath + save_train << std::endl);
   }
   else {

@@ -5,7 +5,7 @@ capabilities:
   inputs: []
   outputs: []
 parameters:
-  actual_class_label: extracted_feats/BVLC_REF_ClassLabel_ai_dataset_robocup_known_objects.txt
+  actual_class_label: extracted_feats/BVLC_REF_ClassLabel_self_scanned_six_split.txt
   set_mode: CL
   feature_descriptor_type: BVLC_REF
-  trained_model_name: known_objects.model
+  trained_model_name: classifier.xml

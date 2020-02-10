@@ -205,4 +205,3 @@ void RSSVM::annotate_hypotheses(uima::CAS &tcas, std::string class_name, std::st
 RSSVM::~RSSVM()
 {
 }
-

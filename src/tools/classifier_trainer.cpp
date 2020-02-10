@@ -38,6 +38,8 @@ int main(int argc, char **argv)
              "classifier to train: [SVM|RF|KNN]")
             ("input,i", bpo::value<std::string>(&train_data_name)->default_value(""),
              "enter input features file")
+            ("label,l", bpo::value<std::string>(&train_label_name)->default_value(""),
+             "enter label file")
             ("out,o", bpo::value<std::string>(&trained_model_name)->default_value("classifier.model"),
              "output file name");
     bpo::variables_map vm;
@@ -83,4 +85,3 @@ int main(int argc, char **argv)
     }
     outInfo("Classifier training is Done !!!");
 }
-
