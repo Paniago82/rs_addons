@@ -154,6 +154,11 @@ target_link_libraries(rs_knnAnnotator rs_classifiers
     ${CATKIN_LIBRARIES}
     ${OpenCV_LIBRARIES})
 
+rs_add_library(rs_knnAnnotatorKnownObject src/KnnAnnotatorKnownObj.cpp)
+target_link_libraries(rs_knnAnnotatorKnownObject rs_classifiers
+        ${CATKIN_LIBRARIES}
+        ${OpenCV_LIBRARIES})
+
 rs_add_library(rs_unrealGTAnnotator src/UnrealGTAnnotator.cpp)
 target_link_libraries(rs_unrealGTAnnotator
     ${catkin_LIBRARIES}
