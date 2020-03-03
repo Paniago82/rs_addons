@@ -8,4 +8,4 @@ parameters:
   actual_class_label: extracted_feats/BVLC_REF_ClassLabel_self_scanned_six_split.txt
   set_mode: CL
   feature_descriptor_type: BVLC_REF
-  trained_model_name: classifier.xml
+  trained_model_name: SVM_Self_Scanned_Six_Trained
