@@ -127,9 +127,36 @@ std::pair<double,double> RSKNN::classifyOnLiveDataKNN(cv::Mat test_mat)
   cv::Mat results, neighborResponses, dists;
   double res = knncalld->findNearest(test_mat, k_max, results, neighborResponses, dists);
   outInfo(dists);
-  double confidence = (2 - dists.at<float>(0))/2;
+  double confidence = RSKNN::calculateConfidence(res, neighborResponses);
+  outInfo("result: " << res << "\n");
+  outInfo("neighborResponses: " << neighborResponses << "\n");
+  outInfo("NeighborResponses width: " << neighborResponses.size().width << "\n");
+  outInfo("NeighborRespones height: " << neighborResponses.size().height << "\n");
+
+  //double confidence = (2 - dists.at<float>(0))/2;
 
   return std::pair<double, double>(res,confidence);
+}
+
+/*
+ * Function that calculates a confidence based on how many of the
+ * k neighbors are members of the same class as the result
+ */
+double RSKNN::calculateConfidence(double classificationResult, cv::Mat neighborResponses) {
+    double confidence;
+    int classCounter = 0;
+    //Iterate over the neighbour classes and count the ones, that are of the result class
+    for (int i = 0; i < neighborResponses.size().width; i++){
+        outInfo("NeigborResponses: " << neighborResponses.at<float>(0, i) << "\n");
+        if(classificationResult == neighborResponses.at<float>(0, i))
+            classCounter++;
+    }
+    outInfo("classCounter: " << classCounter << " size: " << neighborResponses.size().width << "\n");
+    //calculate the confidence
+    confidence = ((double) classCounter) / ((double) neighborResponses.size().width);
+
+    return confidence;
+
 }
 
 void  RSKNN::processPCLFeatureKNN(std::string set_mode, std::string feature_use,

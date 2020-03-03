@@ -50,6 +50,8 @@ public:
 
   std::pair<double,double> classifyOnLiveDataKNN(cv::Mat test_mat);
 
+  double calculateConfidence(double classificationResult, cv::Mat neighborResponses);
+
   void processPCLFeatureKNN(std::string set_mode, std::string feature_use,
                             std::vector<rs::ObjectHypothesis> clusters, cv::Mat &color,std::vector<std::string> models_label, uima::CAS &tcas);
 
