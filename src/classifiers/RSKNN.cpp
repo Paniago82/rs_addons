@@ -22,11 +22,11 @@
 #include <opencv2/ml.hpp>
 #endif
 
-#include <rs/scene_cas.h>
-#include <rs/types/all_types.h>
-#include <rs/scene_cas.h>
-#include <rs/utils/time.h>
-#include <rs/DrawingAnnotator.h>
+#include <robosherlock/scene_cas.h>
+#include <robosherlock/types/all_types.h>
+#include <robosherlock/scene_cas.h>
+#include <robosherlock/utils/time.h>
+#include <robosherlock/DrawingAnnotator.h>
 
 #include <rs_addons/classifiers/RSKNN.h>
 #include <uima/api.hpp>
@@ -193,7 +193,7 @@ void  RSKNN::processPCLFeatureKNN(std::string set_mode, std::string feature_use,
       //set roi on image
       rs::ImageROI image_roi = cluster.rois.get();
       cv::Rect rect;
-      rs::conversion::from(image_roi.roi_hires.get(), rect);
+      rs::conversion::from(image_roi.roi.get(), rect);
 
       //Draw result on image...........
       drawCluster(color, rect, classLabelInString);
@@ -238,10 +238,10 @@ void  RSKNN::processCaffeFeatureKNN(std::string set_mode, std::string feature_us
         //set roi on image
         rs::ImageROI image_roi = cluster.rois.get();
         cv::Rect rect;
-        rs::conversion::from(image_roi.roi_hires.get(), rect);
+        rs::conversion::from(image_roi.roi.get(), rect);
 
         //Draw result on image...........................
-        drawCluster(color, rect, classLabelInString);
+        drawCluster(color, rect, classLabelInString, confidence);
       }
       outInfo("calculation is done");
     }
@@ -249,8 +249,8 @@ void  RSKNN::processCaffeFeatureKNN(std::string set_mode, std::string feature_us
 }
 
 void RSKNN::annotate_hypotheses(uima::CAS &tcas, std::string class_name, std::string feature_name, rs::ObjectHypothesis &cluster, std::string set_mode, double &confi)
-{
-  rs::Classification classResult = rs::create<rs::Classification>(tcas);
+{ if(confi> 0.6)
+  {rs::Classification classResult = rs::create<rs::Classification>(tcas);
   classResult.classname.set(class_name);
   classResult.classifier("k-Nearest Neighbor");
   classResult.featurename(feature_name);
@@ -278,7 +278,7 @@ void RSKNN::annotate_hypotheses(uima::CAS &tcas, std::string class_name, std::st
   }
   else {
     outError("You should set the parameter (set_mode) as CL or GT");
-  }
+  }}
 }
 
 RSKNN::~RSKNN()

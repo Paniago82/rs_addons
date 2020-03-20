@@ -67,10 +67,10 @@ void RSRF::trainModel(std::string train_matrix_name, std::string train_label_nam
     rtree->setUseSurrogates(false);
     rtree->setMaxCategories(15);
     rtree->setPriors(cv::Mat());
-    rtree->setCalculateVarImportance(false);
+    rtree->setCalculateVarImportance(true);
     //TODO: number of variables randomly selected at node and used to find the best split(s) is missing
     //rtree->setCVFolds(4);
-    rtree->setTermCriteria(cv::TermCriteria(cv::TermCriteria::MAX_ITER | cv::TermCriteria::EPS, 100, 0.01f)); //termination criteria, max # of trees, forest accuracy
+    rtree->setTermCriteria(cv::TermCriteria(cv::TermCriteria::MAX_ITER | cv::TermCriteria::EPS, 1000, 0.01f)); //termination criteria, max # of trees, forest accuracy
 
     rtree->train(trainData);
     //rtree->train(train_matrix, cv::ml::ROW_SAMPLE, train_label);

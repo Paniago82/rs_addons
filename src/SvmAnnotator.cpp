@@ -4,9 +4,9 @@
 #include <iostream>
 #include <vector>
 #include <pcl/point_types.h>
-#include <rs/types/all_types.h>
-#include <rs/scene_cas.h>
-#include <rs/utils/time.h>
+#include <robosherlock/types/all_types.h>
+#include <robosherlock/scene_cas.h>
+#include <robosherlock/utils/time.h>
 
 #if CV_MAJOR_VERSION == 2
 #include <opencv2/highgui/highgui.hpp>
@@ -23,7 +23,7 @@
 #include <ros/package.h>
 #include <boost/filesystem.hpp>
 #include <rs_addons/classifiers/RSSVM.h>
-#include <rs/DrawingAnnotator.h>
+#include <robosherlock/DrawingAnnotator.h>
 
 using namespace uima;
 

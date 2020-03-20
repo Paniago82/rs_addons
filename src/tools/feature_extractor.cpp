@@ -1,39 +1,35 @@
 // Developed by: Rakib
 
 #include <iostream>
-#include <ros/ros.h>
-#include <opencv2/opencv.hpp>
+#include <vector>
+#include <fstream>
+#include <string>
+#include <dirent.h>
+#include <algorithm>
+#include <iterator>
 
-#if CV_MAJOR_VERSION == 2
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/core/core.hpp>
-#include <opencv2/ml/ml.hpp>
-#elif CV_MAJOR_VERSION == 3
+#include <ros/ros.h>
+#include <ros/package.h>
+
+#include <opencv2/opencv.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/ml.hpp>
-#endif
 
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
-#include <vector>
-#include <fstream>
-#include <string>
+
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
-#include <ros/package.h>
 
 #ifdef WITH_CAFFE
-#include <rs/recognition/CaffeProxy.h>
+#include <robosherlock/recognition/CaffeProxy.h>
 #endif
 
-#include <dirent.h>
 #include <yaml-cpp/yaml.h>
+
 #include <pcl/io/pcd_io.h>
-#include <algorithm>
-#include <iterator>
 #include <pcl/features/vfh.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/cvfh.h>
@@ -52,15 +48,11 @@ void readClassLabel(std::string obj_file_path,
   cv::FileStorage fs;
   fs.open(obj_file_path, cv::FileStorage::READ);
   std::vector<std::string> classes;
-#if CV_MAJOR_VERSION == 2
-  fs["classes"] >> classes;
-#elif CV_MAJOR_VERSION == 3
   cv::FileNode classesNode = fs["classes"];
   cv::FileNodeIterator it = classesNode.begin(), it_end = classesNode.end();
   for(; it != it_end; ++it) {
     classes.push_back(static_cast<std::string>(*it));
   }
-#endif
   if(classes.empty()) {
     std::cout << "Object file has no classes defined" << std::endl;
   }
@@ -68,15 +60,11 @@ void readClassLabel(std::string obj_file_path,
     double clslabel = 1;
     for(auto c : classes) {
       std::vector<std::string> subclasses;
-#if CV_MAJOR_VERSION == 2
-      fs[c] >> subclasses;
-#elif CV_MAJOR_VERSION == 3
       cv::FileNode subClassesNode = fs[c];
       cv::FileNodeIterator it = subClassesNode.begin(), it_end = subClassesNode.end();
       for(; it != it_end; ++it) {
         subclasses.push_back(static_cast<std::string>(*it));
       }
-#endif
       //To set the map between string and double classlabel
       objectToClassLabelMap.push_back(std::pair< std::string, float >(c, clslabel));
 
@@ -256,7 +244,7 @@ void extractPCLDescriptors(std::string descriptorType,
 void extractCaffeFeature(std::string featType,
                          const  std::map<double, std::vector<std::string> > &modelFiles,
                          std::string resourcesPackagePath,
-                         std::vector<std::pair<double, std::vector<float> > > &caffe_features)
+                         std::vector<std::pair<double, std::vector<float> > > &caffe_features, int rotation_angle)
 {
   std::string CAFFE_MODEL_FILE;
   std::string CAFFE_TRAINED_FILE;
@@ -292,12 +280,39 @@ void extractCaffeFeature(std::string featType,
       std::cerr << it->second[i] << std::endl;
       cv::Mat rgb = cv::imread(it->second[i]);
       std::vector<float> feature = caffeProxyObj.extractFeature(rgb);
-
       cv::Mat desc(1, feature.size(), CV_32F, &feature[0]);
       cv::normalize(desc, desc, 1, 0, cv::NORM_L2);
       std::vector<float> descNormed;
       descNormed.assign((float *)desc.datastart, (float *)desc.dataend);
       caffe_features.push_back(std::pair<double, std::vector<float>>(it->first, descNormed));
+      cv::imshow("Input image",rgb);
+      cv::waitKey(50);
+      if (rotation_angle != 0){
+      for (int angle = rotation_angle; angle<360; angle=angle+rotation_angle)
+      {
+          std::cerr<<"Rotating image with "<<angle<<" degrees"<<std::endl;
+          // get rotation matrix for rotating the image around its center in pixel coordinates
+          cv::Point2f center((rgb.cols-1)/2.0, (rgb.rows-1)/2.0);
+          cv::Mat rot = cv::getRotationMatrix2D(center, angle, 1.0);
+          // determine bounding rectangle, center not relevant
+          cv::Rect2f bbox = cv::RotatedRect(cv::Point2f(), rgb.size(), angle).boundingRect2f();
+          // adjust transformation matrix
+          rot.at<double>(0,2) += bbox.width/2.0 - rgb.cols/2.0;
+          rot.at<double>(1,2) += bbox.height/2.0 - rgb.rows/2.0;
+          cv::Mat dst;
+          cv::warpAffine(rgb, dst, rot, bbox.size());
+          cv::imshow("Input image",dst);
+          cv::waitKey(50);
+          std::vector<float> feature = caffeProxyObj.extractFeature(dst);
+          cv::Mat desc(1, feature.size(), CV_32F, &feature[0]);
+          cv::normalize(desc, desc, 1, 0, cv::NORM_L2);
+          std::vector<float> descNormed;
+          descNormed.assign((float *)desc.datastart, (float *)desc.dataend);
+          caffe_features.push_back(std::pair<double, std::vector<float>>(it->first, descNormed));
+
+
+      }
+      }
     }
   }
   std::cerr << featDescription << caffe_features.size() << std::endl;
@@ -371,6 +386,7 @@ int main(int argc, char **argv)
   po::options_description desc("Allowed options");
   std::string split_file, feat, input_folder, output_folder, split_name;
   int leave_count;
+  int rotation_angle;
   desc.add_options()
   ("help,h", "Print help messages")
   ("split,s", po::value<std::string>(&split_file)->default_value("breakfast3"),
@@ -381,7 +397,10 @@ int main(int argc, char **argv)
    "set input location for image data")
   ("output,o", po::value<std::string>(&output_folder)->default_value(""),
    "set output location")
-  ("leave_out,l", po::value<int>(&leave_count)->default_value(1), "if x>1 take only every x_th file for extractions");
+  ("leave_out,l", po::value<int>(&leave_count)->default_value(1),
+   "if x>1 take only every x_th file for extractions")
+  ("rotation_angle,r", po::value<int>(&rotation_angle)->default_value(0),
+   "if >0 rotate the input image using these steps");
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
   po::notify(vm);
@@ -453,7 +472,7 @@ int main(int argc, char **argv)
     std::cout << "Calculation starts with :" << "::" << feat << std::endl;
     // To read all .png files from the storage folder...........
     getFiles(input_folder, objectToLabel, model_files_all, "_crop.png", leave_count);
-    extractCaffeFeature(feat, model_files_all, resourcePath, descriptors_all);
+    extractCaffeFeature(feat, model_files_all, resourcePath, descriptors_all, rotation_angle);
 #else
     std::cerr << "Caffe not available." << std::endl;
     exit(1);
@@ -471,10 +490,6 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
 
-  // To split all the calculated VFH descriptors (descriptors_all) into train and test data for
-  // the classifier. Here evey fourth element of vector (descriptors_all) is considered as test data
-  // and rest are train data
-  //splitDataset(descriptors_all, descriptors_all_train, descriptors_all_test);
   // To save the train and test data in path /rs_resources/objects_dataset/extractedFeat
   saveDatasets(descriptors_all, feat, split_name, savePathToOutput);
 

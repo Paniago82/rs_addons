@@ -41,11 +41,11 @@
 #include <tf_conversions/tf_eigen.h>
 #include <tf/tf.h>
 
-#include <rs/scene_cas.h>
+#include <robosherlock/scene_cas.h>
 #include <rs_queryanswering/annotators/HandleExtractor.h>
-#include <rs/utils/time.h>
+#include <robosherlock/utils/time.h>
 
-#include <rs/DrawingAnnotator.h>
+#include <robosherlock/DrawingAnnotator.h>
 
 
 using namespace uima;
@@ -182,6 +182,7 @@ public:
 
     pcl::PointCloud<pcl::Normal>::Ptr normals_ptr(new pcl::PointCloud<pcl::Normal>);
     cloud_ptr = pcl::PointCloud<pcl::PointXYZRGBA>::Ptr(new pcl::PointCloud<pcl::PointXYZRGBA>);
+
     cas.get(VIEW_CLOUD, *cloud_ptr);
     cas.get(VIEW_NORMALS, *normals_ptr);
     display = cloud_ptr;
@@ -189,18 +190,19 @@ public:
     std::vector<bool> addedIndices;
     addedIndices.resize(cloud_ptr->points.size(), false);
     outInfo("PointCloud has " << cloud_ptr->points.size() << " points");
+
     for(size_t i = 0; i < regions.size(); ++i)
     {
       filterRegion(regions[i], addedIndices);
     }
-    outInfo(indices->size());
-    pcl::ExtractIndices<pcl::PointXYZRGBA> ei;
-    ei.setKeepOrganized(true);
-    ei.setIndices(indices);
-    ei.filterDirectly(cloud_ptr);
 
-    //replace point cloud with the new one..allows ...why did I not finish this comment?:)))
-    //        cas.set(VIEW_CLOUD,*cloud_ptr);
+    outInfo(indices->size());
+    if(indices->size() > 0){
+    pcl::ExtractIndices<pcl::PointXYZRGBA> ei;
+     ei.setKeepOrganized(true);
+     ei.setIndices(indices);
+     ei.filterDirectly(cloud_ptr);
+    }
 
     std::vector<pcl::ModelCoefficients> handle_coefficients;
     handle_indices.clear();
@@ -277,7 +279,7 @@ public:
 
       rs::Detection detection = rs::create<rs::Detection>(tcas);
 //      detection.name.set(handles[min_dist_index].name());
-      detection.name.set("handle");
+      detection.name.set("Handle");
       detection.source.set("HandleAnnotator");
       detection.confidence.set(1.0);
       c.annotations.append(detection);

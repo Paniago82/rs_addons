@@ -19,13 +19,13 @@
 #include <opencv2/ml.hpp>
 #endif
 
-#include <rs/types/all_types.h>
+#include <robosherlock/types/all_types.h>
 #include <uima/api.hpp>
-#include <rs/scene_cas.h>
-#include <rs/types/all_types.h>
-#include <rs/scene_cas.h>
-#include <rs/utils/time.h>
-#include <rs/DrawingAnnotator.h>
+#include <robosherlock/scene_cas.h>
+#include <robosherlock/types/all_types.h>
+#include <robosherlock/scene_cas.h>
+#include <robosherlock/utils/time.h>
+#include <robosherlock/DrawingAnnotator.h>
 
 using namespace rs;
 
@@ -57,7 +57,7 @@ public:
   void evaluation(std::vector<int> test_label, std::vector<int> predicted_label,std::string obj_classInDouble);
 
   //probably draws a cluster on the image
-  void drawCluster(cv::Mat input , cv::Rect rect, const std::string &label);
+  void drawCluster(cv::Mat input , cv::Rect rect, const std::string &label, double confidence = 1.0);
 
   //what is this?
   void  processPCLFeature(std::string memory_name,std::string set_mode, std::string feature_use,

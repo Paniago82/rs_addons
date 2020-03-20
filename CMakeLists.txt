@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
+#cmake_policy(NEW)
 project(rs_addons)
 
 
@@ -19,7 +20,6 @@ find_package(aruco QUIET)
 find_package(MPI QUIET)
 find_package(RapidJSON REQUIRED) 
 
-
 if(Caffe_FOUND)
     add_definitions(-DWITH_CAFFE)
     message(STATUS "OPTIONAL MODULE Caffe FOUND")
@@ -37,49 +37,50 @@ find_package(catkin REQUIRED robosherlock
     robosherlock_msgs
     )
 
-################################################################################
-## Constants for project                                                      ##
-################################################################################
+message(STATUS " RS built with google googgles: " ${RS_WITH_GG})
+message(STATUS " RS built with Caffe: " ${RS_WITH_CAFFE})
+
+#################################################################################
+### Constants for project                                                      ##
+#################################################################################
 set(NAMESPACE rs_addons)
 set(TYPESYSTEM_CPP_PATH ${PROJECT_SOURCE_DIR}/include/rs_addons/types)
 set(TYPESYSTEM_XML_PATH ${PROJECT_SOURCE_DIR}/descriptors/typesystem)
 set(ANNOTATOR_PATH      ${PROJECT_SOURCE_DIR}/descriptors/annotators)
 set(ENGINE_PATH         ${PROJECT_SOURCE_DIR}/descriptors/analysis_engines)
-set(CMAKE_MODULE_PATH   ${PROJECT_SOURCE_DIR}/cmake)
-################################################################################
-## Configure project configuration files                                      ##
-################################################################################
-configure_file(${RS_PROJECT_CONFIG} ${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}_config.cmake @ONLY)
+
+configure_file(${RS_PROJECT_CONFIG} ${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}_config.cmake)
+#include(cmake/rs_addons_config.cmake)
+
 ################################################################################
 ## Find all include directories                                               ##
 ################################################################################
-find_include_dirs(RS_INCLUDE_DIRS_LIST)
+find_include_dirs(RS_ADDONS_INCLUDE_DIRS_LIST)
 
 catkin_package(
-    INCLUDE_DIRS ${RS_INCLUDE_DIRS_LIST}
-    LIBRARIES ${RS_LIBS}
+    #INCLUDE_DIRS ${RS_ADDONS_INCLUDE_DIRS_LIST}
+    #LIBRARIES ${RS_LIBS}
     CATKIN_DEPENDS robosherlock
-    CFG_EXTRAS ${PROJECT_NAME}_config.cmake
+    #CFG_EXTRAS ${PROJECT_NAME}_config.cmake
     )
 
 include_directories(
     ${RapidJSON_INCLUDE_DIRS}
-    ${RS_INCLUDE_DIRS_LIST}
+    ${RS_ADDONS_INCLUDE_DIRS_LIST}
     ${catkin_INCLUDE_DIRS}
     )
 
 ################################################################################
 ## Update analysis engines, typesystem and include all relevant files         ##
 ################################################################################
-##Update xml list of annotators inside analysis engines
-#update_analysis_engines(robosherlock)
 ## generate classes from the typesystem xml files
 generate_type_system(robosherlock)
+
 #find all relevant files
 find_additional_files()
-################################################################################
-## Sub Projects                                                               ##
-################################################################################
+###############################################################################
+# Sub Projects                                                               ##
+###############################################################################
 #If you want to divide your projects into subprojects include the subdirectories
 #each containing a CMakeLists.txt here
 #add_subdirectory(src/xxx)
@@ -100,7 +101,7 @@ else(aruco_FOUND)
     message(WARNING "Aruco not found. AR Markers Detector will NOT be built")
 endif(aruco_FOUND)
 
-if(Caffe_FOUND)
+if(Caffe_FOUND AND RS_WITH_CAFFE)
   rs_add_library(rs_caffeClassification src/CaffeClassificationAnnotator.cpp)
   target_link_libraries(rs_caffeClassification
         ${catkin_LIBRARIES}
@@ -112,11 +113,11 @@ if(Caffe_FOUND)
         ${PCL_LIBRARIES}
         ${Caffe_LIBRARIES}
         )
-endif(Caffe_FOUND)
+endif()
 
 add_executable(featureExtractor src/tools/feature_extractor.cpp)
 target_link_libraries(featureExtractor
-	${PCL_LIBRARIES}
+  ${PCL_LIBRARIES}
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
   ${Boost_LIBRARIES}

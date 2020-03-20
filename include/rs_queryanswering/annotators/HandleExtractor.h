@@ -50,7 +50,7 @@
 
 #include <tf/tf.h>
 
-#include <rs/utils/output.h>
+#include <robosherlock/utils/output.h>
 
 namespace rs
 {

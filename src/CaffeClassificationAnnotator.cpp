@@ -3,18 +3,18 @@
 #include <pcl/point_types.h>
 
 //RS
-#include <rs/scene_cas.h>
-#include <rs/types/all_types.h>
-#include <rs/DrawingAnnotator.h>
-#include <rs/utils/time.h>
-#include <rs/utils/output.h>
+#include <robosherlock/scene_cas.h>
+#include <robosherlock/types/all_types.h>
+#include <robosherlock/DrawingAnnotator.h>
+#include <robosherlock/utils/time.h>
+#include <robosherlock/utils/output.h>
 
 //Caffe
 #include <caffe/caffe.hpp>
 
 #include <ros/package.h>
 
-#include <rs/recognition/CaffeProxy.h>
+#include <robosherlock/recognition/CaffeProxy.h>
 
 typedef pcl::PointXYZRGBA PointT;
 using namespace std;

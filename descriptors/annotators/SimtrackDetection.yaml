@@ -3,6 +3,7 @@ annotator:
   implementation: rs_simtrack
   name: SimtrackDetection
 capabilities:
-  inputs: []
-  outputs: []
+  inputs: ['rs.pcl.PointCloud']
+  outputs: 
+    - rs.annotation.Detection: ['VollMilch']
 parameters: {}
